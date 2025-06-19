@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -14,6 +13,7 @@ const Index = () => {
   const [isMuted, setIsMuted] = useState(true);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [activeSection, setActiveSection] = useState('hero');
   const heroRef = useRef(null);
   const featuresRef = useRef(null);
   const statsRef = useRef(null);
@@ -33,8 +33,30 @@ const Index = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
+  // Track active section for navbar highlighting
   useEffect(() => {
-    // Custom cursor animation
+    const handleScroll = () => {
+      const sections = ['hero', 'features', 'ai-section', 'stats', 'testimonials', 'cta'];
+      const scrollPosition = window.scrollY + window.innerHeight / 3;
+
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const { offsetTop, offsetHeight } = element;
+          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+            setActiveSection(section);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    // Custom cursor animation with magnetic effect
     gsap.to(cursorRef.current, {
       x: mousePosition.x - 10,
       y: mousePosition.y - 10,
@@ -42,21 +64,28 @@ const Index = () => {
       ease: "power2.out"
     });
 
-    // Enhanced Loader Animation with AI-style text
+    // Enhanced Loader Animation with particle effects
     const tl = gsap.timeline();
     tl.to('.loader-text', {
       duration: 0.5,
-      text: "INITIALIZING...",
+      text: "INITIALIZING QUANTUM CORE...",
       ease: "none"
     })
+    .to('.loader-particles', {
+      scale: 1.5,
+      opacity: 1,
+      duration: 0.8,
+      stagger: 0.1,
+      ease: "elastic.out(1, 0.5)"
+    }, "-=0.3")
     .to('.loader-text', {
       duration: 0.5,
-      text: "LOADING AI ENGINE...",
+      text: "LOADING NEURAL NETWORKS...",
       ease: "none"
     }, "+=0.3")
     .to('.loader-text', {
       duration: 0.5,
-      text: "OPTIMIZING PERFORMANCE...",
+      text: "OPTIMIZING AI ALGORITHMS...",
       ease: "none"
     }, "+=0.3")
     .to('.loader-text', {
@@ -65,21 +94,29 @@ const Index = () => {
       ease: "none"
     }, "+=0.3")
     .to('.loader-glow', {
-      scale: 2,
+      scale: 3,
       opacity: 1,
-      duration: 1,
+      duration: 1.5,
       ease: "power2.inOut"
     }, "-=1")
     .to('.loader-progress', {
       width: "100%",
-      duration: 2,
+      duration: 2.5,
       ease: "power2.inOut"
-    }, "-=2")
+    }, "-=2.5")
+    .to('.loader-particles', {
+      y: -200,
+      opacity: 0,
+      duration: 1,
+      stagger: 0.05,
+      ease: "power2.inOut"
+    }, "-=1")
     .to(loaderRef.current, {
-      duration: 1.5,
+      duration: 1.8,
       opacity: 0,
       scale: 0.8,
       rotationY: 180,
+      filter: "blur(20px)",
       ease: "power2.inOut",
       onComplete: () => {
         if (loaderRef.current) {
@@ -88,41 +125,52 @@ const Index = () => {
       }
     });
 
-    // Advanced navbar entrance with stagger
+    // Advanced navbar entrance with morphing effect
     gsap.fromTo(navRef.current, 
-      { y: -100, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1, ease: "elastic.out(1, 0.8)", delay: 3 }
+      { y: -120, opacity: 0, filter: "blur(10px)" },
+      { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.5, ease: "elastic.out(1, 0.8)", delay: 4 }
     );
 
-    // Hero section with advanced animations
-    const heroTimeline = gsap.timeline({ delay: 3.5 });
+    // Hero section with championship-level animations
+    const heroTimeline = gsap.timeline({ delay: 4.5 });
     heroTimeline
       .fromTo('.hero-title-main', 
-        { opacity: 0, y: 150, scale: 0.5, rotationX: 90 },
-        { opacity: 1, y: 0, scale: 1, rotationX: 0, duration: 2, ease: "elastic.out(1, 0.5)" }
+        { opacity: 0, y: 200, scale: 0.3, rotationX: 90, filter: "blur(20px)" },
+        { opacity: 1, y: 0, scale: 1, rotationX: 0, filter: "blur(0px)", duration: 2.5, ease: "elastic.out(1, 0.5)" }
       )
       .fromTo('.hero-title-sub', 
-        { opacity: 0, y: 100, scale: 0.8 },
-        { opacity: 1, y: 0, scale: 1, duration: 1.5, ease: "back.out(1.7)" }, "-=1.5"
+        { opacity: 0, y: 150, scale: 0.5, rotationY: 45 },
+        { opacity: 1, y: 0, scale: 1, rotationY: 0, duration: 2, ease: "back.out(1.7)" }, "-=2"
       )
       .fromTo('.hero-subtitle', 
-        { opacity: 0, x: -100, rotationY: 45 },
-        { opacity: 1, x: 0, rotationY: 0, duration: 1.5, ease: "power3.out" }, "-=1"
+        { opacity: 0, x: -150, rotationZ: -15, filter: "blur(10px)" },
+        { opacity: 1, x: 0, rotationZ: 0, filter: "blur(0px)", duration: 1.8, ease: "power3.out" }, "-=1.5"
       )
       .fromTo('.hero-buttons', 
-        { opacity: 0, y: 50, scale: 0.8 },
-        { opacity: 1, y: 0, scale: 1, duration: 1, stagger: 0.2, ease: "back.out(1.7)" }, "-=0.8"
+        { opacity: 0, y: 80, scale: 0.6, rotationX: 45 },
+        { opacity: 1, y: 0, scale: 1, rotationX: 0, duration: 1.5, stagger: 0.3, ease: "back.out(1.7)" }, "-=1.2"
       );
 
-    // Advanced Features animations with 3D effects
+    // Championship Features animations with 3D perspective
     gsap.fromTo('.feature-card', 
-      { opacity: 0, y: 100, rotationX: -45, transformPerspective: 1000 },
+      { 
+        opacity: 0, 
+        y: 150, 
+        rotationX: -60, 
+        rotationY: 30, 
+        scale: 0.7,
+        transformPerspective: 1000,
+        filter: "blur(15px)"
+      },
       {
         opacity: 1,
         y: 0,
         rotationX: 0,
-        duration: 1.5,
-        stagger: 0.2,
+        rotationY: 0,
+        scale: 1,
+        filter: "blur(0px)",
+        duration: 2,
+        stagger: 0.15,
         ease: "elastic.out(1, 0.6)",
         scrollTrigger: {
           trigger: featuresRef.current,
@@ -133,28 +181,37 @@ const Index = () => {
       }
     );
 
-    // Floating animations for cards
+    // Advanced floating animations for cards with magnetic field effect
     gsap.to('.feature-card', {
-      y: "random(-15, 15)",
-      rotation: "random(-3, 3)",
-      duration: "random(3, 6)",
+      y: (index) => `random(${-20 + index * 5}, ${20 - index * 5})`,
+      x: (index) => `random(${-10 + index * 2}, ${10 - index * 2})`,
+      rotation: "random(-4, 4)",
+      duration: "random(4, 8)",
       ease: "sine.inOut",
-      stagger: 0.3,
+      stagger: 0.2,
       repeat: -1,
       yoyo: true,
-      delay: 5
+      delay: 6
     });
 
-    // Advanced Stats with counting animation
+    // Championship Stats with explosive entrance
     gsap.fromTo('.stat-card', 
-      { opacity: 0, scale: 0, rotationY: 180 },
+      { 
+        opacity: 0, 
+        scale: 0, 
+        rotationY: 180,
+        y: 100,
+        filter: "blur(20px)"
+      },
       {
         opacity: 1,
         scale: 1,
         rotationY: 0,
-        duration: 1.2,
-        stagger: 0.2,
-        ease: "back.out(1.7)",
+        y: 0,
+        filter: "blur(0px)",
+        duration: 1.8,
+        stagger: 0.15,
+        ease: "back.out(1.9)",
         scrollTrigger: {
           trigger: statsRef.current,
           start: "top 75%",
@@ -163,7 +220,7 @@ const Index = () => {
       }
     );
 
-    // Testimonials horizontal scroll
+    // Advanced Testimonials with cinematic scroll
     const testimonialsContainer = document.querySelector('.testimonials-container');
     if (testimonialsContainer) {
       gsap.to(testimonialsContainer, {
@@ -174,24 +231,26 @@ const Index = () => {
           start: "top top",
           end: () => `+=${testimonialsContainer.scrollWidth}`,
           pin: true,
-          scrub: 1
+          scrub: 1,
+          snap: 1 / (testimonialsContainer.children.length - 1)
         }
       });
     }
 
-    // CTA magnetic effect
+    // Championship CTA with quantum pulse effect
     gsap.to('.cta-button', {
-      scale: 1.05,
-      boxShadow: "0 0 50px rgba(147, 51, 234, 0.8)",
-      duration: 3,
+      scale: 1.08,
+      boxShadow: "0 0 60px rgba(147, 51, 234, 0.9), 0 0 120px rgba(236, 72, 153, 0.6)",
+      filter: "brightness(1.1)",
+      duration: 2.5,
       ease: "power2.inOut",
       yoyo: true,
       repeat: -1
     });
 
-    // Parallax effects
+    // Advanced parallax with multiple layers
     gsap.to('.parallax-bg', {
-      y: (i, target) => -ScrollTrigger.maxScroll(window) * target.dataset.speed,
+      y: (i, target) => -ScrollTrigger.maxScroll(window) * parseFloat(target.dataset.speed),
       ease: "none",
       scrollTrigger: {
         start: 0,
@@ -201,22 +260,46 @@ const Index = () => {
       }
     });
 
-    // Interactive particles
+    // Championship particles with physics simulation
     gsap.to('.floating-particle', {
-      y: "random(-30, 30)",
-      x: "random(-20, 20)",
-      rotation: "random(-360, 360)",
-      duration: "random(4, 8)",
+      y: (index) => `random(${-50 + index * 2}, ${50 - index * 2})`,
+      x: (index) => `random(${-30 + index}, ${30 - index})`,
+      rotation: "random(-720, 720)",
+      scale: "random(0.5, 1.5)",
+      duration: "random(6, 12)",
       ease: "sine.inOut",
-      stagger: 0.1,
+      stagger: 0.05,
       repeat: -1,
       yoyo: true
     });
 
-    // Auto-rotate testimonials
+    // Auto-rotate testimonials with smooth transition
     const testimonialInterval = setInterval(() => {
       setCurrentTestimonial(prev => (prev + 1) % 6);
-    }, 4000);
+    }, 5000);
+
+    // Advanced scroll-triggered text reveals
+    gsap.utils.toArray('.text-reveal').forEach((element) => {
+      const chars = element.textContent.split('');
+      element.innerHTML = chars.map(char => `<span class="char">${char}</span>`).join('');
+      
+      gsap.fromTo(element.querySelectorAll('.char'), 
+        { opacity: 0, y: 100, rotationX: -90 },
+        {
+          opacity: 1,
+          y: 0,
+          rotationX: 0,
+          duration: 0.1,
+          stagger: 0.02,
+          ease: "back.out(1.7)",
+          scrollTrigger: {
+            trigger: element,
+            start: "top 80%",
+            toggleActions: "play none none reverse"
+          }
+        }
+      );
+    });
 
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
@@ -228,13 +311,30 @@ const Index = () => {
     setIsDark(!isDark);
     document.documentElement.classList.toggle('dark');
     
+    // Enhanced theme toggle animation
     gsap.to('.theme-toggle', {
-      rotation: 720,
-      scale: 1.3,
-      duration: 0.8,
+      rotation: 1080,
+      scale: 1.5,
+      duration: 1.2,
       ease: "elastic.out(1, 0.3)",
       yoyo: true,
       repeat: 1
+    });
+
+    // Theme transition particle effect
+    gsap.to('.theme-particle', {
+      scale: 2,
+      opacity: 1,
+      duration: 0.8,
+      stagger: 0.1,
+      ease: "power2.out",
+      onComplete: () => {
+        gsap.to('.theme-particle', {
+          scale: 0,
+          opacity: 0,
+          duration: 0.5
+        });
+      }
     });
   };
 
@@ -260,11 +360,28 @@ const Index = () => {
     const element = document.getElementById(sectionId);
     if (element) {
       setIsMenuOpen(false);
+      
+      // Championship smooth scroll with GSAP
       gsap.to(window, {
-        duration: 2,
-        scrollTo: element,
+        duration: 2.5,
+        scrollTo: {
+          y: element,
+          offsetY: 80
+        },
         ease: "power3.inOut"
       });
+
+      // Highlight animation for target section
+      gsap.fromTo(element, 
+        { scale: 1 },
+        { 
+          scale: 1.02, 
+          duration: 0.6, 
+          ease: "power2.inOut", 
+          yoyo: true, 
+          repeat: 1 
+        }
+      );
     }
   };
 
@@ -375,120 +492,170 @@ const Index = () => {
 
   return (
     <div className={`${isDark ? 'dark' : ''} overflow-x-hidden relative`}>
-      {/* Custom Cursor */}
+      {/* Championship Custom Cursor */}
       <div 
         ref={cursorRef}
-        className="fixed w-5 h-5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full pointer-events-none z-50 mix-blend-difference opacity-80"
+        className="fixed w-6 h-6 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 rounded-full pointer-events-none z-50 mix-blend-difference opacity-90 shadow-lg"
         style={{ left: 0, top: 0 }}
-      />
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full animate-ping opacity-50"></div>
+      </div>
 
-      {/* Advanced floating particles */}
+      {/* Championship floating particles with physics */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        {[...Array(30)].map((_, i) => (
+        {[...Array(50)].map((_, i) => (
           <div
             key={i}
-            className="floating-particle absolute rounded-full opacity-20"
+            className="floating-particle absolute rounded-full opacity-30"
             style={{
-              width: `${Math.random() * 8 + 4}px`,
-              height: `${Math.random() * 8 + 4}px`,
-              background: `linear-gradient(45deg, 
-                hsl(${Math.random() * 360}, 70%, 60%), 
-                hsl(${Math.random() * 360}, 70%, 80%))`,
+              width: `${Math.random() * 12 + 6}px`,
+              height: `${Math.random() * 12 + 6}px`,
+              background: `linear-gradient(${Math.random() * 360}deg, 
+                hsl(${Math.random() * 360}, 80%, 70%), 
+                hsl(${Math.random() * 360}, 90%, 80%))`,
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 8}s`
+              animationDelay: `${Math.random() * 10}s`,
+              filter: `blur(${Math.random() * 2}px)`
             }}
           />
         ))}
       </div>
 
-      {/* Premium Loader */}
+      {/* Championship Loader with particle effects */}
       <div 
         ref={loaderRef}
-        className="fixed inset-0 z-50 bg-gradient-to-br from-purple-900 via-pink-800 to-orange-700 flex items-center justify-center"
+        className="fixed inset-0 z-50 bg-gradient-to-br from-purple-900 via-pink-800 to-orange-700 flex items-center justify-center overflow-hidden"
       >
-        <div className="text-center relative">
-          <div className="loader-glow absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-30 blur-3xl scale-75"></div>
+        <div className="absolute inset-0">
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className="loader-particles absolute rounded-full bg-gradient-to-r from-white to-yellow-300 opacity-0"
+              style={{
+                width: `${Math.random() * 8 + 4}px`,
+                height: `${Math.random() * 8 + 4}px`,
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 2}s`
+              }}
+            />
+          ))}
+        </div>
+        <div className="text-center relative z-10">
+          <div className="loader-glow absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 opacity-20 blur-3xl scale-50"></div>
           <div className="relative mb-8">
-            <div className="loader-text text-white text-4xl md:text-6xl font-black mb-6">VIBE</div>
-            <div className="w-64 h-2 bg-gray-800 rounded-full mx-auto">
-              <div className="loader-progress h-full bg-gradient-to-r from-purple-400 to-pink-400 rounded-full w-0"></div>
+            <div className="loader-text text-white text-5xl md:text-7xl font-black mb-8 tracking-wider">VIBE</div>
+            <div className="w-80 h-3 bg-gray-800 rounded-full mx-auto relative overflow-hidden">
+              <div className="loader-progress h-full bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 rounded-full w-0 relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Ultra Premium Navbar */}
+      {/* Championship Enhanced Navbar with functionality */}
       <nav 
         ref={navRef}
-        className="fixed top-0 w-full z-40 backdrop-blur-2xl bg-white/5 dark:bg-gray-900/5 border-b border-white/10 dark:border-gray-700/10"
+        className="fixed top-0 w-full z-40 backdrop-blur-3xl bg-white/5 dark:bg-gray-900/5 border-b border-white/10 dark:border-gray-700/10"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
-            {/* Premium Logo */}
-            <div className="relative group cursor-pointer">
-              <div className="absolute -inset-3 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 rounded-xl blur-lg opacity-30 group-hover:opacity-60 transition duration-500"></div>
-              <div className="relative flex items-center space-x-3 bg-gradient-to-r from-purple-900/20 to-pink-900/20 backdrop-blur-lg rounded-xl px-6 py-3 border border-white/20">
-                <div className="text-3xl font-black bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 bg-clip-text text-transparent">
+            {/* Championship Logo with particles */}
+            <div className="relative group cursor-pointer" onClick={() => scrollToSection('hero')}>
+              <div className="absolute -inset-4 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 rounded-2xl blur-2xl opacity-30 group-hover:opacity-70 transition duration-700"></div>
+              <div className="relative flex items-center space-x-4 bg-gradient-to-r from-purple-900/30 to-pink-900/30 backdrop-blur-2xl rounded-2xl px-8 py-4 border border-white/30 group-hover:border-purple-400/50 transition-all duration-500">
+                <div className="text-4xl font-black bg-gradient-to-r from-purple-300 via-pink-300 to-orange-300 bg-clip-text text-transparent tracking-wider">
                   VIBE
                 </div>
-                <div className="flex space-x-1">
-                  <Sparkles className="w-5 h-5 text-purple-400 animate-pulse" />
-                  <Brain className="w-5 h-5 text-pink-400 animate-bounce" />
-                  <Zap className="w-5 h-5 text-orange-400 animate-ping" />
+                <div className="flex space-x-2">
+                  <Sparkles className="w-6 h-6 text-purple-400 animate-pulse" />
+                  <Brain className="w-6 h-6 text-pink-400 animate-bounce" />
+                  <Zap className="w-6 h-6 text-orange-400 animate-ping" />
                 </div>
               </div>
+              {/* Theme particles */}
+              {[...Array(6)].map((_, i) => (
+                <div
+                  key={i}
+                  className="theme-particle absolute w-2 h-2 bg-purple-400 rounded-full opacity-0"
+                  style={{
+                    left: `${20 + i * 15}%`,
+                    top: `${30 + (i % 2) * 40}%`
+                  }}
+                />
+              ))}
             </div>
 
-            {/* Premium Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-2 bg-gradient-to-r from-white/10 to-gray-100/10 dark:from-gray-800/10 dark:to-gray-700/10 backdrop-blur-2xl rounded-2xl px-8 py-4 border border-white/20">
+            {/* Championship Desktop Navigation with active states */}
+            <div className="hidden md:flex items-center space-x-1 bg-gradient-to-r from-white/10 to-gray-100/10 dark:from-gray-800/10 dark:to-gray-700/10 backdrop-blur-3xl rounded-3xl px-6 py-3 border border-white/30">
               {navItems.map((item, index) => (
                 <button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
-                  className="group relative px-6 py-3 text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-all duration-500 rounded-xl hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-pink-500/10"
+                  className={`group relative px-6 py-4 text-gray-700 dark:text-gray-300 transition-all duration-500 rounded-2xl font-semibold ${
+                    activeSection === item.id 
+                      ? 'text-purple-600 dark:text-purple-400 bg-gradient-to-r from-purple-500/20 to-pink-500/20' 
+                      : 'hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-pink-500/10'
+                  }`}
                 >
-                  <span className="relative z-10 flex items-center gap-3 font-semibold">
-                    <span className="text-lg group-hover:scale-110 transition-transform duration-300">{item.icon}</span>
+                  <span className="relative z-10 flex items-center gap-3">
+                    <span className={`text-xl transition-transform duration-300 ${activeSection === item.id ? 'scale-125' : 'group-hover:scale-110'}`}>
+                      {item.icon}
+                    </span>
                     {item.name}
                   </span>
-                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
+                  {activeSection === item.id && (
+                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 opacity-30 animate-pulse"></div>
+                  )}
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
                 </button>
               ))}
             </div>
 
-            {/* Premium Controls */}
+            {/* Championship Controls */}
             <div className="flex items-center space-x-4">
               <button
                 onClick={toggleTheme}
-                className="theme-toggle relative p-4 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:scale-110 transition-all duration-300 shadow-xl hover:shadow-purple-500/50"
+                className="theme-toggle relative p-4 rounded-2xl bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 text-white hover:scale-110 transition-all duration-300 shadow-2xl hover:shadow-purple-500/60"
               >
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
-                <span className="relative text-xl">{isDark ? '☀️' : '🌙'}</span>
+                <span className="relative text-2xl">{isDark ? '☀️' : '🌙'}</span>
               </button>
 
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="md:hidden p-4 rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 text-gray-600 dark:text-gray-400 hover:bg-white/20 transition-all duration-300"
+                className="md:hidden p-4 rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 text-gray-600 dark:text-gray-400 hover:bg-white/20 transition-all duration-300 hover:scale-105"
               >
-                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                {isMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Mobile menu */}
+        {/* Championship Mobile menu with animations */}
         {isMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 w-full bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl border-b border-white/20">
-            <div className="px-6 py-8 space-y-4">
+          <div className="md:hidden absolute top-full left-0 w-full bg-white/95 dark:bg-gray-900/95 backdrop-blur-3xl border-b border-white/20">
+            <div className="px-6 py-8 space-y-2">
               {navItems.map((item, index) => (
                 <button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
-                  className="w-full text-left px-6 py-4 text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 dark:hover:from-gray-800 dark:hover:to-gray-700 rounded-xl transition-all duration-300 flex items-center gap-4"
+                  className={`w-full text-left px-6 py-5 transition-all duration-300 rounded-2xl flex items-center gap-4 font-semibold text-lg ${
+                    activeSection === item.id
+                      ? 'text-purple-600 dark:text-purple-400 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-gray-800 dark:to-gray-700'
+                      : 'text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 dark:hover:from-gray-800 dark:hover:to-gray-700'
+                  }`}
+                  style={{
+                    animationDelay: `${index * 0.1}s`
+                  }}
                 >
-                  <span className="text-2xl">{item.icon}</span>
-                  <span className="font-semibold text-lg">{item.name}</span>
+                  <span className="text-3xl">{item.icon}</span>
+                  <span>{item.name}</span>
+                  {activeSection === item.id && (
+                    <div className="ml-auto w-3 h-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-pulse"></div>
+                  )}
                 </button>
               ))}
             </div>
@@ -496,19 +663,19 @@ const Index = () => {
         )}
       </nav>
 
-      {/* Enhanced Parallax Background */}
-      <div className="parallax-bg fixed inset-0 z-0" data-speed="0.5">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-600/40 via-pink-500/30 to-orange-400/40 dark:from-purple-900/50 dark:via-pink-900/40 dark:to-orange-900/50"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(147,51,234,0.2),transparent_50%)]"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(236,72,153,0.2),transparent_50%)]"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_40%_40%,rgba(249,115,22,0.1),transparent_50%)]"></div>
+      {/* Championship Parallax Background */}
+      <div className="parallax-bg fixed inset-0 z-0" data-speed="0.3">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-600/50 via-pink-500/40 to-orange-400/50 dark:from-purple-900/60 dark:via-pink-900/50 dark:to-orange-900/60"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(147,51,234,0.3),transparent_60%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(236,72,153,0.3),transparent_60%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_40%_40%,rgba(249,115,22,0.2),transparent_60%)]"></div>
       </div>
 
-      {/* Premium Hero Section */}
+      {/* Championship Hero Section */}
       <section id="hero" ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <video 
           ref={videoRef}
-          className="absolute inset-0 w-full h-full object-cover opacity-30"
+          className="absolute inset-0 w-full h-full object-cover opacity-40"
           autoPlay 
           muted={isMuted}
           loop 
@@ -517,73 +684,73 @@ const Index = () => {
           <source src="/assets/videos/hero-bg.mp4" type="video/mp4" />
         </video>
         
-        {/* Video Controls */}
-        <div className="absolute top-24 right-8 flex space-x-3 z-20">
+        {/* Championship Video Controls */}
+        <div className="absolute top-28 right-8 flex space-x-3 z-20">
           <button
             onClick={toggleVideo}
-            className="p-3 bg-white/20 backdrop-blur-lg rounded-full border border-white/30 text-white hover:bg-white/30 transition-all duration-300"
+            className="p-4 bg-white/20 backdrop-blur-2xl rounded-2xl border border-white/30 text-white hover:bg-white/30 transition-all duration-300 hover:scale-110"
           >
-            {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+            {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
           </button>
           <button
             onClick={toggleMute}
-            className="p-3 bg-white/20 backdrop-blur-lg rounded-full border border-white/30 text-white hover:bg-white/30 transition-all duration-300"
+            className="p-4 bg-white/20 backdrop-blur-2xl rounded-2xl border border-white/30 text-white hover:bg-white/30 transition-all duration-300 hover:scale-110"
           >
-            {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+            {isMuted ? <VolumeX className="w-6 h-6" /> : <Volume2 className="w-6 h-6" />}
           </button>
         </div>
         
         <div className="relative z-10 text-center px-4 max-w-6xl mx-auto">
-          <div className="hero-title-main mb-4">
-            <h1 className="text-8xl md:text-12xl font-black bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 bg-clip-text text-transparent leading-none">
+          <div className="hero-title-main mb-6">
+            <h1 className="text-9xl md:text-12xl font-black bg-gradient-to-r from-purple-300 via-pink-300 to-orange-300 bg-clip-text text-transparent leading-none tracking-wider">
               FUTURE
             </h1>
           </div>
-          <div className="hero-title-sub mb-8">
-            <h2 className="text-6xl md:text-8xl font-black bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent leading-none">
+          <div className="hero-title-sub mb-10">
+            <h2 className="text-7xl md:text-9xl font-black bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent leading-none tracking-wide">
               IS NOW
             </h2>
           </div>
-          <p className="hero-subtitle text-2xl md:text-4xl text-gray-700 dark:text-gray-300 mb-16 max-w-4xl mx-auto font-light leading-relaxed">
-            Experience the convergence of <span className="font-bold text-purple-600">AI</span>, 
-            <span className="font-bold text-pink-600"> Blockchain</span>, and 
-            <span className="font-bold text-orange-600"> Quantum Computing</span>
+          <p className="hero-subtitle text-3xl md:text-5xl text-gray-700 dark:text-gray-300 mb-20 max-w-4xl mx-auto font-light leading-relaxed">
+            Experience the convergence of <span className="font-bold text-purple-500">AI</span>, 
+            <span className="font-bold text-pink-500"> Blockchain</span>, and 
+            <span className="font-bold text-orange-500"> Quantum Computing</span>
             <br />in one revolutionary platform
           </p>
-          <div className="hero-buttons flex flex-col sm:flex-row gap-6 justify-center items-center">
+          <div className="hero-buttons flex flex-col sm:flex-row gap-8 justify-center items-center">
             <button 
               onClick={() => scrollToSection('features')}
-              className="group relative px-12 py-6 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 text-white font-black rounded-2xl text-xl overflow-hidden shadow-2xl hover:shadow-purple-500/50 transition-all duration-500"
+              className="group relative px-16 py-8 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 text-white font-black rounded-3xl text-2xl overflow-hidden shadow-2xl hover:shadow-purple-500/60 transition-all duration-500 hover:scale-105"
             >
               <span className="relative z-10 flex items-center gap-4">
                 Launch Experience 
-                <Rocket className="w-7 h-7 group-hover:translate-x-2 group-hover:-translate-y-1 transition-transform duration-300" />
+                <Rocket className="w-8 h-8 group-hover:translate-x-3 group-hover:-translate-y-2 transition-transform duration-300" />
               </span>
               <div className="absolute inset-0 bg-gradient-to-r from-purple-700 to-pink-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </button>
             <button 
               onClick={() => scrollToSection('ai-section')}
-              className="group relative px-12 py-6 bg-white/20 backdrop-blur-lg border-2 border-white/30 text-white font-black rounded-2xl text-xl hover:bg-white/30 transition-all duration-500"
+              className="group relative px-16 py-8 bg-white/20 backdrop-blur-2xl border-2 border-white/30 text-white font-black rounded-3xl text-2xl hover:bg-white/30 transition-all duration-500 hover:scale-105"
             >
               <span className="flex items-center gap-4">
                 Try AI Demo
-                <Brain className="w-7 h-7 group-hover:animate-pulse" />
+                <Brain className="w-8 h-8 group-hover:animate-pulse" />
               </span>
             </button>
           </div>
         </div>
 
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white/80 animate-bounce">
-          <ChevronDown className="w-8 h-8" />
+        {/* Championship Scroll Indicator */}
+        <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 text-white/90 animate-bounce">
+          <ChevronDown className="w-10 h-10" />
         </div>
       </section>
 
-      {/* Premium Features Section */}
+      {/* Championship Features Section */}
       <section id="features" ref={featuresRef} className="relative py-32 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-24">
-            <h2 className="text-7xl md:text-8xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-8">
+            <h2 className="text-reveal text-7xl md:text-8xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-8">
               Revolutionary Features
             </h2>
             <p className="text-3xl text-gray-600 dark:text-gray-400 max-w-4xl mx-auto leading-relaxed">
@@ -619,11 +786,11 @@ const Index = () => {
         </div>
       </section>
 
-      {/* New AI Demo Section */}
+      {/* Championship AI Demo Section */}
       <section id="ai-section" className="relative py-32 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-800 dark:to-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <h2 className="text-6xl md:text-7xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-8">
+            <h2 className="text-reveal text-6xl md:text-7xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-8">
               AI in Action
             </h2>
             <p className="text-2xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
@@ -671,12 +838,12 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Enhanced Stats Section */}
+      {/* Championship Stats Section */}
       <section id="stats" ref={statsRef} className="relative py-32 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xKSIgZmlsbC1yaWxlPSJub256ZXJvIj48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIxLjUiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-20">
-            <h2 className="text-6xl md:text-7xl font-black text-white mb-6">
+            <h2 className="text-reveal text-6xl md:text-7xl font-black text-white mb-6">
               Performance Metrics
             </h2>
             <p className="text-2xl text-white/90 max-w-3xl mx-auto">
@@ -702,11 +869,11 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Premium Testimonials Section */}
+      {/* Championship Testimonials Section */}
       <section id="testimonials" ref={testimonialsRef} className="relative overflow-hidden bg-white dark:bg-gray-900">
         <div className="py-32">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
-            <h2 className="text-6xl md:text-7xl font-black text-center bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-8">
+            <h2 className="text-reveal text-6xl md:text-7xl font-black text-center bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-8">
               Industry Leaders Choose Us
             </h2>
             <p className="text-2xl text-gray-600 dark:text-gray-400 text-center max-w-3xl mx-auto">
@@ -742,7 +909,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Premium CTA Section */}
+      {/* Championship CTA Section */}
       <section id="cta" ref={ctaRef} className="relative py-32 bg-gradient-to-br from-purple-900 via-pink-800 to-orange-700 overflow-hidden">
         <video 
           className="absolute inset-0 w-full h-full object-cover opacity-20"
@@ -757,7 +924,7 @@ const Index = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-purple-900/70 to-pink-900/70"></div>
         
         <div className="relative z-10 max-w-6xl mx-auto text-center px-4">
-          <h2 className="text-7xl md:text-9xl font-black text-white mb-12 leading-none">
+          <h2 className="text-reveal text-7xl md:text-9xl font-black text-white mb-12 leading-none">
             Join the
             <br />
             <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
@@ -802,7 +969,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Premium Footer */}
+      {/* Championship Footer */}
       <footer className="bg-gray-900 text-white py-20 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-900/30 to-pink-900/30"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
