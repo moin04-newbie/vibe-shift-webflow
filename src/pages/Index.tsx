@@ -22,11 +22,11 @@ const Index = () => {
   const loaderRef = useRef(null);
   const navRef = useRef(null);
   const cursorRef = useRef(null);
-  const videoRef = useRef(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   // Track mouse for custom cursor
   useEffect(() => {
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
     window.addEventListener('mousemove', handleMouseMove);
@@ -221,7 +221,7 @@ const Index = () => {
     );
 
     // Advanced Testimonials with cinematic scroll
-    const testimonialsContainer = document.querySelector('.testimonials-container');
+    const testimonialsContainer = document.querySelector('.testimonials-container') as HTMLElement;
     if (testimonialsContainer) {
       gsap.to(testimonialsContainer, {
         x: () => -(testimonialsContainer.scrollWidth - window.innerWidth),
@@ -250,7 +250,7 @@ const Index = () => {
 
     // Advanced parallax with multiple layers
     gsap.to('.parallax-bg', {
-      y: (i, target) => -ScrollTrigger.maxScroll(window) * parseFloat(target.dataset.speed),
+      y: (i, target) => -ScrollTrigger.maxScroll(window) * parseFloat((target as HTMLElement).dataset.speed || "0"),
       ease: "none",
       scrollTrigger: {
         start: 0,
@@ -280,10 +280,11 @@ const Index = () => {
 
     // Advanced scroll-triggered text reveals
     gsap.utils.toArray('.text-reveal').forEach((element) => {
-      const chars = element.textContent.split('');
-      element.innerHTML = chars.map(char => `<span class="char">${char}</span>`).join('');
+      const el = element as HTMLElement;
+      const chars = el.textContent?.split('') || [];
+      el.innerHTML = chars.map(char => `<span class="char">${char}</span>`).join('');
       
-      gsap.fromTo(element.querySelectorAll('.char'), 
+      gsap.fromTo(el.querySelectorAll('.char'), 
         { opacity: 0, y: 100, rotationX: -90 },
         {
           opacity: 1,
@@ -293,7 +294,7 @@ const Index = () => {
           stagger: 0.02,
           ease: "back.out(1.7)",
           scrollTrigger: {
-            trigger: element,
+            trigger: el,
             start: "top 80%",
             toggleActions: "play none none reverse"
           }
